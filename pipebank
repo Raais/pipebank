@@ -26,7 +26,7 @@ print_usage() {
 
 random_key() {
     key=$(head -c 500 /dev/urandom | tr -dc '0-9A-Z' | fold -w 4 | head -n 1)
-    echo $key
+    echo "$key"
 }
 
 if [ $# -eq 0 ]; then
