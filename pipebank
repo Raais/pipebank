@@ -14,7 +14,7 @@
 TEMP_PATH="/tmp/pipebank"
 
 print_usage() {
-    echo "Usage: [|] $0 <command> [key] [|]"
+    echo "Usage: [|] pipebank <command> [key] [|]"
     echo "Commands:"
     echo "  set/put/send/save [key]"
     echo "  get <key>"
