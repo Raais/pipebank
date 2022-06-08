@@ -1,0 +1,84 @@
+#!/bin/bash
+
+# a simple program to store and retrieve named binary streams
+
+# $ cat recipe.txt | pipebank save fluffy-pizza
+# $ pipebank fetch fluffy-pizza | grep -i secret
+
+# $ ls | pipebank send
+# Saved as J9WE
+# $ pipebank fetch J9WE | sort
+
+# commands: set/put/send/save | get | fetch | delete/rm | list/ls | clear
+
+TEMP_PATH="/tmp/pipebank"
+
+print_usage() {
+    echo "Usage: [|] $0 <command> [key] [|]"
+    echo "Commands:"
+    echo "  set/put/send/save [key]"
+    echo "  get <key>"
+    echo "  fetch <key> - get and delete"
+    echo "  delete/rm <key>"
+    echo "  list/ls"
+    echo "  clear"
+}
+
+random_key() {
+    key=$(head -c 500 /dev/urandom | tr -dc '0-9A-Z' | fold -w 4 | head -n 1)
+    echo $key
+}
+
+if [ $# -eq 0 ]; then
+    print_usage
+    exit 1
+fi
+
+if [ ! -d "$TEMP_PATH" ]; then
+    mkdir "$TEMP_PATH"
+fi
+
+if [ "$1" == "set" ] || [ "$1" == "put" ] || [ "$1" == "send" ] || [ "$1" == "save" ]; then
+    if [ $# -eq 1 ]; then
+        key=$(random_key)
+    else
+        key=$2
+    fi
+    if [ -p /dev/stdin ]; then
+        cat - > "$TEMP_PATH/$key"
+        if [ $# -eq 1 ]; then
+            echo "Saved as $key"
+        fi
+    else
+        echo "Error: no input stream"
+        exit 1
+    fi
+    exit 0
+elif [ "$1" == "get" ] || [ "$1" == "fetch" ]; then
+    if [ $# -eq 1 ]; then
+        print_usage
+        exit 1
+    fi
+    cat "$TEMP_PATH/$2"
+    if [ "$1" == "fetch" ]; then
+        rm "$TEMP_PATH/$2"
+    fi
+    exit 0
+elif [ "$1" == "delete" ] || [ "$1" == "rm" ]; then
+    if [ $# -eq 1 ]; then
+        print_usage
+        exit 1
+    fi
+    rm "$TEMP_PATH/$2"
+    exit 0
+elif [ "$1" == "list" ] || [ "$1" == "ls" ]; then
+    ls -1 "$TEMP_PATH"
+    exit 0
+elif [ "$1" == "clear" ]; then
+    rm -rf "$TEMP_PATH"
+    mkdir "$TEMP_PATH"
+    exit 0
+else
+    print_usage
+    exit 1
+fi
