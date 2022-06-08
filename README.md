@@ -2,7 +2,7 @@
 a simple program to store and retrieve named binary streams
 
 ```bash
-Usage: [|] ./pipebank <command> [key] [|]
+Usage: [|] pipebank <command> [key] [|]
 Commands:
   set/put/send/save [key]
   get <key>
