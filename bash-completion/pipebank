@@ -1,0 +1,19 @@
+_pipebank() {
+    local TEMP_PATH="/tmp/pipebank"
+    local cur prev opts
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    opts="save get fetch delete list clear"
+    if [ "$COMP_CWORD" -eq 1 ]; then
+        COMPREPLY=("$(compgen -W "$opts" -- "$cur")")
+        return 0
+    fi
+    if [ "$COMP_CWORD" -eq 2 ]; then
+        if [ "$prev" == "get" ] || [ "$prev" == "fetch" ] || [ "$prev" == "delete" ] || [ "$prev" == "rm" ]; then
+            COMPREPLY=("$(compgen -W "$(ls -1 "$TEMP_PATH")" -- "$cur")")
+            return 0
+        fi
+    fi
+}
+complete -F _pipebank pipebank
